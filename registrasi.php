@@ -7,10 +7,11 @@ header("Content-Type: application/json");
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "web_loco";
+$dbname = "diet_application"; // Ganti nama database sesuai dengan yang Anda gunakan
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+// Cek koneksi
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
@@ -32,8 +33,8 @@ if (isset($_POST['email']) && isset($_POST['username']) && isset($_POST['passwor
         exit();
     }
 
-    // Check if the email or username already exists
-    $sql = "SELECT * FROM users WHERE email = ? OR username = ?";
+    // Cek apakah email atau username sudah ada
+    $sql = "SELECT * FROM data_pengguna WHERE email = ? OR username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $email, $username);
     $stmt->execute();
@@ -46,10 +47,14 @@ if (isset($_POST['email']) && isset($_POST['username']) && isset($_POST['passwor
         exit();
     }
 
-    // Insert new user into the database
-    $sql = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+    // Hash password sebelum menyimpan
+    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+    // Insert pengguna baru ke dalam database
+    $id_user = uniqid(); // Anda bisa menggunakan metode lain untuk menghasilkan ID unik
+    $sql = "INSERT INTO data_pengguna (id_user, username, email, password) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $email, $username, $password);
+    $stmt->bind_param("ssss", $id_user, $username, $email, $hashed_password);
 
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message' => 'Registration successful']);
