@@ -3,7 +3,7 @@ require_once('config.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = array();
-    $sql = "SELECT nama_menu, kalori  FROM `menu` ORDER BY nama_menu ASC ";
+    $sql = "SELECT * FROM `menu` WHERE kategori = 'minuman'";
 
     $result = $conn->query($sql); 
 
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $data['data'][] = $row;     
         }
     } else {
-        $data['error'] = 'Query gagal: ' .$conn->error;
+        $data['error'] = 'Query gagal: ' . $conn->error;
     }
     header('Content-Type: application/json');
     echo json_encode($data);

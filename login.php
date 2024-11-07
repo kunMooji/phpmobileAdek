@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "diet_application"; // Ganti dengan nama database Anda
+$dbname = "diet_application";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
