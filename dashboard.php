@@ -1,18 +1,14 @@
 <?php
 session_start();
 
-// Periksa apakah pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
-
-// Ambil user_id dari session
 $user_id = $_SESSION['user_id'];
 
 include 'db_config.php';
 
-// Ambil data pengguna dari database (username dan password asli)
 $query = "SELECT username, password FROM users WHERE id='$user_id'";
 $result = mysqli_query($conn, $query);
 

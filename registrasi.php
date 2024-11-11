@@ -4,19 +4,8 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "diet_application"; // Ganti nama database sesuai dengan yang Anda gunakan
+require_once('config.php');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Cek koneksi
-if ($conn->connect_error) {
-    die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
-}
-
-// Menggunakan $_POST untuk mendapatkan data
 if (isset($_POST['email']) && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['re_password'])) {
     $email = $_POST['email'];
     $username = $_POST['username'];
@@ -47,11 +36,11 @@ if (isset($_POST['email']) && isset($_POST['username']) && isset($_POST['passwor
         exit();
     }
 
-    // Hash password sebelum menyimpan
+    // hash sblm simpan
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-    // Insert pengguna baru ke dalam database
-    $id_user = uniqid(); // Anda bisa menggunakan metode lain untuk menghasilkan ID unik
+    //insert
+    $id_user = uniqid();
     $sql = "INSERT INTO data_pengguna (id_user, username, email, password) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $id_user, $username, $email, $hashed_password);

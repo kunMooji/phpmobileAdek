@@ -11,7 +11,6 @@ $dbname = "diet_application";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Cek koneksi
 if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
@@ -25,7 +24,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         exit();
     }
 
-    // Mencari pengguna berdasarkan username
     $sql = "SELECT * FROM data_pengguna WHERE username = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
@@ -35,18 +33,18 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         
-        // Verifikasi password
+    
         if (password_verify($password, $user['password'])) {
-            // Login berhasil
+            
             echo json_encode([
                 'success' => true,
                 'message' => 'Login successful!',
                 'user' => [
                     'username' => $user['username'],
-                    'email' => $user['email'], // Tambahkan email jika diperlukan
-                    'no_hp' => $user['no_hp'], // Tambahkan nomor HP jika diperlukan
-                    'berat_badan' => $user['berat_badan'], // Tambahkan berat badan jika diperlukan
-                    'tinggi_badan' => $user['tinggi_badan'] // Tambahkan tinggi badan jika diperlukan
+                    'email' => $user['email'],  
+                    'no_hp' => $user['no_hp'],  
+                    'berat_badan' => $user['berat_badan'],  
+                    'tinggi_badan' => $user['tinggi_badan']     
                 ]
             ]);
         } else {
