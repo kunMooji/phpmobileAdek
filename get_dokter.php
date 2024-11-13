@@ -4,52 +4,40 @@ $dbname = 'diet_application';
 $username = 'root';     
 $password = '';     
 
+// Membuat koneksi ke database
 $koneksi = new mysqli($host, $username, $password, $dbname);
 if ($koneksi->connect_error) {
     die(json_encode(array('error' => 'Koneksi gagal: ' . $koneksi->connect_error)));
 }
 
+// Menangani permintaan GET untuk mengambil data konsultan
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = array();
 
+    // Query untuk mengambil data dokter
     $sql = "SELECT id_konsultan, email, nama_lengkap, jenis, no_hp, foto_dokter FROM konsultan";
     $result = $koneksi->query($sql);
 
     if ($result) {
-        $data['data'] = array();    
+        $data['data'] = array();
 
         while($row = $result->fetch_assoc()) {
+            // Jika foto_dokter ada, konversi ke base64
             if ($row['foto_dokter']) {
                 $row['foto_dokter'] = base64_encode($row['foto_dokter']);
             } else {
                 $row['foto_dokter'] = null;
             }
-            $data['data'][] = $row;     
+            $data['data'][] = $row;
         }
     } else {
         $data['error'] = 'Query gagal: ' . $koneksi->error;
     }
+
+    // Mengatur header JSON dan mengirimkan respons
     header('Content-Type: application/json');
     echo json_encode($data);
     exit();
-}
-
-// Add endpoint for uploading doctor image
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_konsultan'])) {
-    $id_konsultan = $_POST['id_konsultan'];
-    
-    if (isset($_FILES['foto_dokter'])) {
-        $imageData = file_get_contents($_FILES['foto_dokter']['tmp_name']);
-        $stmt = $koneksi->prepare("UPDATE konsultan SET foto_dokter = ? WHERE id_konsultan = ?");
-        $stmt->bind_param("si", $imageData, $id_konsultan);
-        
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true]);
-        } else {
-            echo json_encode(['error' => 'Gagal mengupload gambar']);
-        }
-        $stmt->close();
-    }
 }
 
 $koneksi->close();
