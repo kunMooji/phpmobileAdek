@@ -15,43 +15,43 @@ if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
+if (isset($_POST['email']) && isset($_POST['password'])) {
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    if (empty($username) || empty($password)) {
+    if (empty($email) || empty($password)) {
         echo json_encode(['success' => false, 'message' => 'All fields are required']);
         exit();
     }
 
-    $sql = "SELECT * FROM data_pengguna WHERE username = ?";
+    // Modify query to select by email
+    $sql = "SELECT * FROM data_pengguna WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        
-    
+
+        // Verify password using password_verify()
         if (password_verify($password, $user['password'])) {
-            
             echo json_encode([
                 'success' => true,
                 'message' => 'Login successful!',
                 'user' => [
-                    'username' => $user['username'],
-                    'email' => $user['email'],  
-                    'no_hp' => $user['no_hp'],  
-                    'berat_badan' => $user['berat_badan'],  
-                    'tinggi_badan' => $user['tinggi_badan']     
+                    'username' => $user['username'],  // Mengirimkan username
+                    'email' => $user['email'],
+                    'no_hp' => $user['no_hp'],
+                    'berat_badan' => $user['berat_badan'],
+                    'tinggi_badan' => $user['tinggi_badan']
                 ]
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Incorrect username or password']);
+            echo json_encode(['success' => false, 'message' => 'Incorrect email or password']);
         }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Incorrect username or password']);
+        echo json_encode(['success' => false, 'message' => 'Incorrect email or password']);
     }
 
     $stmt->close();

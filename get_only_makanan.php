@@ -1,9 +1,19 @@
 <?php
-require_once('config.php');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "adek";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = array();
-    $sql = "SELECT nama_menu, kalori  FROM `menu` WHERE kategori = 'makanan'";
+    $sql = "SELECT nama_menu, kalori  FROM `menu` WHERE kategori_menu = 'makanan_berat'";
 
     $result = $conn->query($sql); 
 

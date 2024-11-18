@@ -12,7 +12,7 @@ if ($conn->connect_error) {
 
 $id_menu = isset($_GET['id_menu']) ? intval($_GET['id_menu']) : 0;
 
-$sql = "SELECT id_menu, nama_menu, protein, karbohidrat, lemak, kalori FROM asupan WHERE id_menu = $id_menu";
+$sql = "SELECT id_menu, nama_menu, resep, kalori FROM menu WHERE id_menu = $id_menu";
 $result = $conn->query($sql);
 
 $menuArray = [];
@@ -22,10 +22,8 @@ if ($result->num_rows > 0) {
         $menuArray[] = [
             'id_menu' => $row['id_menu'],
             'nama_menu' => $row['nama_menu'],
-            'protein' => $row['protein'],
-            'karbohidrat' => $row['karbohidrat'],
-            'lemak' => $row['lemak'],
-            'kalori' => $row['kalori']
+            'resep' => $row['resep'],
+            'kalori' => $row['kalori'],
         ];
     }
 }

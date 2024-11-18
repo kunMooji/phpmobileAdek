@@ -10,13 +10,12 @@ if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Connection failed: ' . $conn->connect_error]));
 }
 
-// Memastikan data POST diterima
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    $username = $_POST['username'];
+if (isset($_POST['email']) && isset($_POST['password'])) {
+    $email = $_POST['email'];
     $newPassword = $_POST['password'];
 
     // Validasi input
-    if (empty($username) || empty($newPassword)) {
+    if (empty($email) || empty($newPassword)) {
         echo json_encode(['success' => false, 'message' => 'All fields are required']);
         exit();
     }
@@ -25,15 +24,15 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
     // Update password di database
-    $sql = "UPDATE data_pengguna SET password = ? WHERE username = ?";
+    $sql = "UPDATE data_pengguna SET password = ? WHERE email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $hashedPassword, $username);
+    $stmt->bind_param("ss", $hashedPassword, $email);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
             echo json_encode(['success' => true, 'message' => 'Password updated successfully']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Username not found']);
+            echo json_encode(['success' => false, 'message' => 'Email not found']);
         }
     } else {
         echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);

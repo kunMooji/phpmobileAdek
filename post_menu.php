@@ -7,7 +7,7 @@ header("Content-Type: application/json; charset=UTF-8");
 require_once 'config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $required_fields = ['nama_menu', 'protein', 'karbohidrat', 'lemak', 'kalori', 'satuan', 'kategori', 'id_konsultan'];
+    $required_fields = ['nama_menu', 'protein', 'karbohidrat', 'lemak', 'kalori', 'satuan', 'kategori_menu'];
     $missing_fields = [];
     
     foreach ($required_fields as $field) {
@@ -30,18 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lemak = trim($_POST['lemak']);
     $kalori = trim($_POST['kalori']);
     $satuan = trim($_POST['satuan']);
-    $kategori = trim($_POST['kategori']);
-    $id_konsultan = trim($_POST['id_konsultan']);
+    $kategori_menu = trim($_POST['kategori_menu']);
  
-    $sql = "INSERT INTO menu (nama_menu, protein, karbohidrat, lemak, kalori, satuan, kategori, id_konsultan) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO menu (nama_menu, protein, karbohidrat, lemak, kalori, satuan, kategori_menu) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
             
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("ssssssss", 
+        $stmt->bind_param("sssssss", 
             $nama_menu, $protein, $karbohidrat, $lemak, 
-            $kalori, $satuan, $kategori, $id_konsultan
+            $kalori, $satuan, $kategori_menu
         );
         
         if ($stmt->execute()) {

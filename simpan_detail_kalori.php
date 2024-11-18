@@ -4,47 +4,47 @@ header("Content-Type: application/json");
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "diet_application";
+$dbname = "adek";
 
-// Buat koneksi
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Cek koneksi
 if ($conn->connect_error) {
     die(json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]));
 }
 
-// Cek apakah request method adalah POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(["success" => false, "message" => "Invalid request method"]);
     exit();
 }
 
-// Ambil data dari request
-$id_menu = isset($_POST['id_menu']) ? $_POST['id_menu'] : '';
-$jumlah = isset($_POST['jumlah']) ? $_POST['jumlah'] : '';
-$kalori = isset($_POST['kalori']) ? $_POST['kalori'] : '';
-$total_kalori = isset($_POST['total_kalori']) ? $_POST['total_kalori'] : '';
+// Validate data
+$id_user = filter_var($_POST['id_user'], FILTER_SANITIZE_STRING);
+$id_menu = filter_var($_POST['id_menu'], FILTER_SANITIZE_STRING);
+$tanggal = filter_var($_POST['tanggal'], FILTER_SANITIZE_STRING);
+$jumlah = filter_var($_POST['jumlah'], FILTER_VALIDATE_INT);
+$total_kalori = filter_var($_POST['total_kalori'], FILTER_VALIDATE_FLOAT);
+$total_minum = filter_var($_POST['total_minum'], FILTER_VALIDATE_INT);
 
-// Validasi input
-if (empty($id_menu) || empty($jumlah) || empty($kalori) || empty($total_kalori)) {
-    echo json_encode(["success" => false, "message" => "Semua field harus diisi"]);
+if ($jumlah === false || $total_kalori === false || $total_minum === false) {
+    echo json_encode(["success" => false, "message" => "Invalid data type"]);
     exit();
 }
 
-// Gunakan prepared statement untuk mencegah SQL injection
-$stmt = $conn->prepare("INSERT INTO detail_kalori (id_menu, jumlah, kalori, total_kalori) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("ssss", $id_menu, $jumlah, $kalori, $total_kalori);
+$stmt = $conn->prepare("INSERT INTO detail_kalori (id_user, id_menu, tanggal, jumlah, total_kalori, total_minum) 
+                        VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssssss", $id_user, $id_menu, $tanggal, $jumlah, $total_kalori, $total_minum);
 
 if ($stmt->execute()) {
     echo json_encode([
         "success" => true, 
         "message" => "Data berhasil disimpan",
         "data" => [
+            "id_user" => $id_user,
             "id_menu" => $id_menu,
+            "tanggal" => $tanggal,
             "jumlah" => $jumlah,
-            "kalori" => $kalori,
-            "total_kalori" => $total_kalori
+            "total_kalori" => $total_kalori,
+            "total_minum" => $total_minum
         ]
     ]);
 } else {

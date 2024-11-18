@@ -3,7 +3,7 @@ require_once('config.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = array();
-    $sql = "SELECT nama_menu, kalori FROM `menu` WHERE kategori = 'dessert'";
+    $sql = "SELECT nama_menu, kalori FROM `menu` WHERE kategori_menu = 'dessert'";
 
     $result = $conn->query($sql); 
 

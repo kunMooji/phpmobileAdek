@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "diet_application";
+$db   = "adek";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
