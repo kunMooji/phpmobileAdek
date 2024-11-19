@@ -1,5 +1,8 @@
 <?php
 header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
 $servername = "localhost";
 $username = "root";
@@ -9,51 +12,53 @@ $dbname = "adek";
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
-    die(json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]));
+    http_response_code(500);
+    die(json_encode([
+        "success" => false,
+        "message" => "Database connection failed"
+    ]));
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["success" => false, "message" => "Invalid request method"]);
-    exit();
-}
+$id_user = $_POST['id_user'];
+$id_menu = $_POST['id_menu'];
+$tanggal = $_POST['tanggal'];
+$jumlah = $_POST['jumlah'];
+$total_kalori = $_POST['total_kalori'];
+$total_protein = $_POST['total_protein'];
+$total_karbohidrat = $_POST['total_karbohidrat'];
+$total_lemak = $_POST['total_lemak'];
 
-// Validate data
-$id_user = filter_var($_POST['id_user'], FILTER_SANITIZE_STRING);
-$id_menu = filter_var($_POST['id_menu'], FILTER_SANITIZE_STRING);
-$tanggal = filter_var($_POST['tanggal'], FILTER_SANITIZE_STRING);
-$jumlah = filter_var($_POST['jumlah'], FILTER_VALIDATE_INT);
-$total_kalori = filter_var($_POST['total_kalori'], FILTER_VALIDATE_FLOAT);
-$total_minum = filter_var($_POST['total_minum'], FILTER_VALIDATE_INT);
+$query = "INSERT INTO detail_kalori 
+          (id_user, id_menu, tanggal, jumlah, total_kalori, total_protein, total_karbohidrat, total_lemak) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-if ($jumlah === false || $total_kalori === false || $total_minum === false) {
-    echo json_encode(["success" => false, "message" => "Invalid data type"]);
-    exit();
-}
+$stmt = $conn->prepare($query);
+if ($stmt) {
+    $stmt->bind_param(
+        "sssidddd",
+        $id_user, $id_menu, $tanggal, $jumlah,
+        $total_kalori, $total_protein, $total_karbohidrat, $total_lemak
+    );
 
-$stmt = $conn->prepare("INSERT INTO detail_kalori (id_user, id_menu, tanggal, jumlah, total_kalori, total_minum) 
-                        VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssss", $id_user, $id_menu, $tanggal, $jumlah, $total_kalori, $total_minum);
+    if ($stmt->execute()) {
+        echo json_encode([
+            "success" => true,
+            "message" => "Data berhasil disimpan"
+        ]);
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => "Gagal menyimpan data"
+        ]);
+    }
 
-if ($stmt->execute()) {
-    echo json_encode([
-        "success" => true, 
-        "message" => "Data berhasil disimpan",
-        "data" => [
-            "id_user" => $id_user,
-            "id_menu" => $id_menu,
-            "tanggal" => $tanggal,
-            "jumlah" => $jumlah,
-            "total_kalori" => $total_kalori,
-            "total_minum" => $total_minum
-        ]
-    ]);
+    $stmt->close();
 } else {
     echo json_encode([
-        "success" => false, 
-        "message" => "Error: " . $stmt->error
+        "success" => false,
+        "message" => "Query preparation failed"
     ]);
 }
 
-$stmt->close();
 $conn->close();
 ?>
