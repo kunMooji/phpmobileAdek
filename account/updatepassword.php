@@ -14,16 +14,15 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     $email = $_POST['email'];
     $newPassword = $_POST['password'];
 
-    // Validasi input
     if (empty($email) || empty($newPassword)) {
         echo json_encode(['success' => false, 'message' => 'All fields are required']);
         exit();
     }
 
-    // Hash password baru
+    //hash pw baru nya
     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-    // Update password di database
+    // update password di database
     $sql = "UPDATE data_pengguna SET password = ? WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $hashedPassword, $email);

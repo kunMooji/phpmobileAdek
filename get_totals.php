@@ -12,7 +12,6 @@ $dbname = "adek";
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Koneksi ke database
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
@@ -23,7 +22,6 @@ if ($conn->connect_error) {
     ]));
 }
 
-// Ambil id_user dari parameter GET
 $id_user = isset($_GET['id_user']) ? $_GET['id_user'] : null;
 
 if (!$id_user) {
@@ -36,35 +34,36 @@ if (!$id_user) {
 }
 
 try {
-    // Query untuk mendapatkan total data
+   
     $query = "
-        SELECT 
-            COALESCE(SUM(total_minum), 0) AS total_minum,
-            COALESCE(SUM(total_protein), 0) AS total_protein,
-            COALESCE(SUM(total_karbohidrat), 0) AS total_karbohidrat,
-            COALESCE(SUM(total_lemak), 0) AS total_lemak,
-            COALESCE(SUM(total_gula), 0) AS total_gula
-        FROM 
-            detail_kalori
-        WHERE 
-            id_user = ?
+    SELECT 
+        COALESCE(SUM(dk.total_minum), 0) AS total_minum,
+        COALESCE(SUM(dk.total_protein), 0) AS total_protein,
+        COALESCE(SUM(dk.total_karbohidrat), 0) AS total_karbohidrat,
+        COALESCE(SUM(dk.total_lemak), 0) AS total_lemak,
+        COALESCE(SUM(dk.total_gula), 0) AS total_gula,
+        dp.tipe_diet,
+        dp.berat_badan,
+        dp.tinggi_badan
+    FROM 
+        detail_kalori dk
+    JOIN 
+        data_pengguna dp ON dk.id_user = dp.id_user
+    WHERE 
+        dk.id_user = ?;
     ";
 
-    // Siapkan statement
     $stmt = $conn->prepare($query);
     if (!$stmt) {
         throw new Exception("Query preparation failed: " . $conn->error);
     }
 
-    // Bind parameter
     $stmt->bind_param("s", $id_user);
 
-    // Eksekusi query
     if (!$stmt->execute()) {
         throw new Exception("Query execution failed: " . $stmt->error);
     }
 
-    // Ambil hasil
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
 

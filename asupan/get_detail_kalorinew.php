@@ -4,15 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "adek";
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+require_once('config.php');
 
 if ($conn->connect_error) {
     http_response_code(500);
@@ -22,6 +14,7 @@ if ($conn->connect_error) {
     ]));
 }
 
+// Get and validate user ID
 $id_user = isset($_GET['id_user']) ? $_GET['id_user'] : null;
 
 if (!$id_user) {
@@ -36,13 +29,10 @@ if (!$id_user) {
 try {
     $query = "
         SELECT 
-            m.nama_menu, 
-            dk.jumlah, 
-            dk.total_kalori
+            COUNT(*) as jumlah_menu,
+            COALESCE(SUM(dk.total_kalori), 0) as total_kalori
         FROM 
             detail_kalori dk
-        JOIN 
-            menu m ON dk.id_menu = m.id_menu
         WHERE 
             dk.id_user = ?
     ";
@@ -59,19 +49,14 @@ try {
     }
 
     $result = $stmt->get_result();
-
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = [
-            "nama_menu" => $row['nama_menu'],
-            "jumlah" => (int)$row['jumlah'],
-            "total_kalori" => (int)$row['total_kalori']
-        ];
-    }
+    $row = $result->fetch_assoc();
 
     echo json_encode([
         "success" => true,
-        "data" => $data
+        "data" => [
+            "jumlah_menu" => (int)($row['jumlah_menu'] ?? 0),
+            "total_kalori" => (int)($row['total_kalori'] ?? 0)
+        ]
     ]);
 
 } catch (Exception $e) {

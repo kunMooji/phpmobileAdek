@@ -4,12 +4,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "adek";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+require_once('config.php');
 
 if ($conn->connect_error) {
     http_response_code(500);

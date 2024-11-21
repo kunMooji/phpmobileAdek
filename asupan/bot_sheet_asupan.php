@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 
     $data = array();
-    $sql = "SELECT id_menu, nama_menu, kalori, protein, karbohidrat, satuan FROM `menu` WHERE nama_menu = ?";
+    $sql = "SELECT id_menu, nama_menu, kalori, protein, karbohidrat, lemak, gula, satuan FROM `menu` WHERE nama_menu = ?";
 
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param("s", $nama_menu);
