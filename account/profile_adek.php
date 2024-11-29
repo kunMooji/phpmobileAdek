@@ -10,7 +10,6 @@ if (!$conn) {
     ]));
 }
 
-// Cek apakah nama_lengkap ada
 if (!isset($_POST['nama_lengkap'])) {
     die(json_encode([
         'status' => 'error',

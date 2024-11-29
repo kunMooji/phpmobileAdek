@@ -22,17 +22,18 @@ $total_kalori = $_POST['total_kalori'];
 $total_protein = $_POST['total_protein'];
 $total_karbohidrat = $_POST['total_karbohidrat'];
 $total_lemak = $_POST['total_lemak'];
+$total_gula = $_POST['total_gula']; 
 
 $query = "INSERT INTO detail_kalori 
-          (id_user, id_menu, tanggal, jumlah, total_kalori, total_protein, total_karbohidrat, total_lemak) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+          (id_user, id_menu, tanggal, jumlah, total_kalori, total_protein, total_karbohidrat, total_lemak, total_gula) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conn->prepare($query);
 if ($stmt) {
     $stmt->bind_param(
-        "sssidddd",
+        "sssiddddd",
         $id_user, $id_menu, $tanggal, $jumlah,
-        $total_kalori, $total_protein, $total_karbohidrat, $total_lemak
+        $total_kalori, $total_protein, $total_karbohidrat, $total_lemak, $total_gula 
     );
 
     if ($stmt->execute()) {

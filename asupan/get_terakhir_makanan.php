@@ -4,11 +4,9 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Enable error logging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Log incoming request
 error_log("Received request with ID: " . $_GET['id_user'] ?? 'no id');
 
 require_once('config.php');
@@ -68,7 +66,7 @@ try {
 
     while ($row = $result->fetch_assoc()) {
         $data[] = [
-            "tanggal" => date('Y-m-d', strtotime($row['tanggal'])), // Format tanggal konsisten
+            "tanggal" => date('Y-m-d', strtotime($row['tanggal'])),
             "jumlah" => (int)($row['jumlah'] ?? 0),
             "total_kalori" => (int)($row['total_kalori'] ?? 0),
             "menu_name" => $row['nama_menu'] ?? ''

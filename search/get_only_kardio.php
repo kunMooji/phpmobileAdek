@@ -24,7 +24,7 @@ try {
     $stmt = $conn->prepare($sql);
     
     // Bind parameter
-    $jenisOlahraga = 'kekuatan';
+    $jenisOlahraga = 'kardio';
     $stmt->bind_param('s', $jenisOlahraga);
     
     // Execute query
