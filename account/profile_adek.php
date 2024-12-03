@@ -19,7 +19,8 @@ if (!isset($_POST['nama_lengkap'])) {
 
 $nama_lengkap = mysqli_real_escape_string($conn, $_POST['nama_lengkap']);
 
-$query = "SELECT berat_badan, tinggi_badan FROM data_pengguna WHERE nama_lengkap = '$nama_lengkap'";
+// tambahkan tanggal_lahir ke dalam query
+$query = "SELECT berat_badan, tinggi_badan, tanggal_lahir FROM data_pengguna WHERE nama_lengkap = '$nama_lengkap'";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
@@ -28,7 +29,8 @@ if ($result && mysqli_num_rows($result) > 0) {
         'status' => 'success',
         'data' => [
             'berat_badan' => $row['berat_badan'],
-            'tinggi_badan' => $row['tinggi_badan']
+            'tinggi_badan' => $row['tinggi_badan'],
+            'tanggal_lahir' => $row['tanggal_lahir'] // tambahkan tanggal_lahir ke dalam respons
         ]
     ]);
 } else {
