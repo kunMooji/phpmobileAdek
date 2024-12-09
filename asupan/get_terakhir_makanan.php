@@ -33,21 +33,21 @@ if (!$id_user) {
 
 try {
     $query = "
-        SELECT 
-            DATE(dk.tanggal) as tanggal,
-            COUNT(*) as jumlah,
-            COALESCE(SUM(dk.total_kalori), 0) as total_kalori,
-            m.nama_menu
-        FROM 
-            detail_kalori dk
-        JOIN 
-            menu m ON dk.id_menu = m.id_menu
-        WHERE 
-            dk.id_user = ?
-        GROUP BY 
-            DATE(dk.tanggal), m.nama_menu
-        ORDER BY 
-            dk.tanggal DESC
+
+        SELECT
+        DATE(rm.tanggal) AS tanggal,
+        COUNT(*) AS jumlah,
+        COALESCE(SUM(rm.total_kalori), 0) AS total_kalori,
+        rm.nama_menu
+    FROM 
+        riwayat_makanan rm
+    WHERE 
+        rm.id_user = ?
+    GROUP BY 
+        DATE(rm.tanggal), rm.nama_menu
+    ORDER BY 
+        rm.tanggal DESC;
+
     ";
 
     $stmt = $conn->prepare($query);

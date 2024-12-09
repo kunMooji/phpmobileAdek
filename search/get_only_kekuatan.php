@@ -1,72 +1,53 @@
 <?php
-require_once('config.php');
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json; charset=utf-8");
 
-// Set response headers
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "adek";
 
-// Default response structure
-$response = [
-    'status' => 'error',
-    'message' => 'Tidak ada data',
-    'data' => []
-];
+// Create a database connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+$conn->set_charset("utf8");
 
-try {
-    // Validate request method
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-        throw new Exception('Metode request tidak valid');
-    }
+// Check for GET request
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $data = array();
 
-    // Prepare SQL statement with parameter binding
-    $sql = "SELECT nama_olahraga, deskripsi, gambar FROM `olahraga` WHERE jenis_olahraga = ?";
-    $stmt = $conn->prepare($sql);
-    
-    // Bind parameter
-    $jenisOlahraga = 'kekuatan';
-    $stmt->bind_param('s', $jenisOlahraga);
-    
-    // Execute query
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Query to get data for 'kekuatan' category
+    $sql = "SELECT id_olahraga, nama_olahraga, deskripsi, gambar, cara_olahraga FROM `olahraga` WHERE jenis_olahraga = 'kekuatan';";
 
-    // Check if query was successful
+    $result = $conn->query($sql);
+
     if ($result) {
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            // Safely encode image to base64 with null check
-            $row['gambar'] = $row['gambar'] ? base64_encode($row['gambar']) : null;
-            $data[] = $row;
-        }
+        $data['data'] = array();
 
-        // Update response if data found
-        if (!empty($data)) {
-            $response = [
-                'status' => 'success',
-                'message' => 'Data berhasil diambil',
-                'data' => $data
-            ];
+        while ($row = $result->fetch_assoc()) {
+            // Ensure the image filepath has no extra spaces
+            $row['gambar'] = trim($row['gambar']);
+
+            // Optional: Prefix the filepath with a base URL if required
+            // Uncomment the following line and update the base URL accordingly
+            // $row['gambar'] = "http://your-server-domain.com/images/" . $row['gambar'];
+
+            // Ensure description has no extra whitespace
+            $row['deskripsi'] = trim($row['deskripsi']);
+
+            // Add to the data array
+            $data['data'][] = $row;
         }
     } else {
-        throw new Exception('Gagal mengeksekusi query: ' . $conn->error);
+        $data['error'] = 'Query failed: ' . $conn->error;
     }
-} catch (Exception $e) {
-    // Handle any exceptions
-    $response = [
-        'status' => 'error',
-        'message' => $e->getMessage(),
-        'data' => []
-    ];
-    
-    // Set appropriate HTTP status code for errors
-    http_response_code(500);
+
+    // Output JSON
+    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    exit();
 }
 
-// Output JSON response
-echo json_encode($response);
-
-// Close database connection
-$stmt->close();
+// Close the connection
 $conn->close();
 ?>

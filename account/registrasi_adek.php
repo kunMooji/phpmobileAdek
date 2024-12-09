@@ -36,19 +36,26 @@ if (isset($_POST['nama_lengkap']) && isset($_POST['email']) && isset($_POST['pas
     }
 
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-    $id_user = uniqid();
+    $id_user = hash('sha256', uniqid(mt_rand(), true));
     $sql = "INSERT INTO data_pengguna (id_user, nama_lengkap, email, password) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $id_user, $nama_lengkap, $email, $hashed_password);
-
+    
     if ($stmt->execute()) {
-        echo json_encode([ 'success' => true, 'message' => 'Registration successful', 'user_id' => $id_user ]);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Registration successful',
+            'user_id' => $id_user
+        ]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error: ' . $stmt->error
+        ]);
     }
-
+    
     $stmt->close();
+    
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid data']);
 }
